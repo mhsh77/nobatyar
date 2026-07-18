@@ -13,6 +13,7 @@ const doctorLinks = [
   { to: '/posts', label: 'پست‌ها', icon: '📝' },
   { to: '/chatbot-settings', label: 'چت‌بات هوشمند', icon: '🤖' },
   { to: '/doctor/comments', label: 'نظرات', icon: '💬' },
+  { to: '/doctor/survey', label: 'نظرسنجی', icon: '📝' },
   { to: '/site-settings', label: 'تنظیمات سایت', icon: '⚙️' },
 ];
 

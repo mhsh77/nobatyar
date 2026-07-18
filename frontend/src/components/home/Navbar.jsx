@@ -7,6 +7,7 @@ import API from '../../api/axios';
 const links = [
   { to: '/', label: 'خانه' },
   { to: '/book', label: 'رزرو نوبت' },
+  { to: '/survey', label: 'نظرسنجی' },
   { to: '/blog', label: 'وبلاگ' },
   { to: '#contact', label: 'ارتباط', scroll: true },
 ];

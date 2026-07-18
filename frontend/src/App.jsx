@@ -22,7 +22,9 @@ import Posts from './pages/Posts';
 import Blog from './pages/Blog';
 import SinglePost from './pages/SinglePost';
 import SeminarRegister from './pages/SeminarRegister';
+import Survey from './pages/Survey';
 import SeminarManagement from './pages/doctor/SeminarManagement';
+import SurveyManagement from './pages/doctor/SurveyManagement';
 import CommentsManagement from './pages/doctor/CommentsManagement';
 
 function RootRedirect() {
@@ -59,6 +61,9 @@ export default function App() {
             <Route path="/doctor/comments" element={
               <ProtectedRoute role="doctor"><CommentsManagement /></ProtectedRoute>
             } />
+            <Route path="/doctor/survey" element={
+              <ProtectedRoute role="doctor"><SurveyManagement /></ProtectedRoute>
+            } />
 
             <Route path="/secretary/dashboard" element={
               <ProtectedRoute role={['doctor', 'secretary']}><SecretaryDashboard /></ProtectedRoute>
@@ -87,6 +92,7 @@ export default function App() {
             <Route path="/blog/:id" element={<SinglePost />} />
 
             <Route path="/seminar" element={<SeminarRegister />} />
+            <Route path="/survey" element={<Survey />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

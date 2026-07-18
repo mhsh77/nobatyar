@@ -46,7 +46,8 @@ export default function BlogSection() {
                     {p.author_name} — {formatPersianDate(p.created_at.split(' ')[0])}
                   </p>
                   <h3 className="font-bold text-slate-800 mb-2 text-sm leading-relaxed">{p.title}</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">{p.content}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{p.content}</p>
+                  <span className="text-emerald-600 text-xs font-medium mt-2 inline-flex items-center gap-1 hover:text-emerald-700 transition">ادامه مطلب ←</span>
                 </div>
               </motion.div>
             </Link>
