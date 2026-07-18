@@ -1,0 +1,11 @@
+backend/node_modules/
+backend/__pycache__/
+backend/*.pyc
+backend/instance/*.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
