@@ -23,6 +23,7 @@ import Blog from './pages/Blog';
 import SinglePost from './pages/SinglePost';
 import SeminarRegister from './pages/SeminarRegister';
 import SeminarManagement from './pages/doctor/SeminarManagement';
+import CommentsManagement from './pages/doctor/CommentsManagement';
 
 function RootRedirect() {
   const { isAuthenticated, isDoctor, isSecretary } = useAuth();
@@ -54,6 +55,9 @@ export default function App() {
             } />
             <Route path="/doctor/seminar" element={
               <ProtectedRoute role="doctor"><SeminarManagement /></ProtectedRoute>
+            } />
+            <Route path="/doctor/comments" element={
+              <ProtectedRoute role="doctor"><CommentsManagement /></ProtectedRoute>
             } />
 
             <Route path="/secretary/dashboard" element={

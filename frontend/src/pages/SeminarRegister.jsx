@@ -31,7 +31,6 @@ export default function SeminarRegister() {
   const [otpPhone, setOtpPhone] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [otpLoading, setOtpLoading] = useState(false);
-  const [otpSentCode, setOtpSentCode] = useState('');
 
   useEffect(() => { fetchSettings(); }, []);
 
@@ -52,7 +51,7 @@ export default function SeminarRegister() {
     try {
       const res = await fetch(SEND_OTP_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: otpPhone }) });
       const d = await res.json();
-      if (d.success) { setOtpStep('code'); setOtpSentCode(d.code || ''); }
+      if (d.success) { setOtpStep('code'); }
       else { setErrors([d.error || 'خطا در ارسال کد']); }
     } catch { setErrors(['خطا در ارتباط با سرور']); }
     finally { setOtpLoading(false); }
@@ -152,11 +151,6 @@ export default function SeminarRegister() {
                         ) : otpStep === 'code' ? (
                           <div className="space-y-3">
                             <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 rounded-xl text-sm text-gray-600">
-                              <span>📱</span><span dir="ltr">{otpPhone}</span>
-                              <button type="button" onClick={() => setOtpStep('phone')} className="mr-auto text-medical-600 hover:text-medical-700 text-xs">ویرایش</button>
-                            </div>
-                            {otpSentCode && <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-center text-xs text-blue-600">کد تایید: <strong dir="ltr">{otpSentCode}</strong></div>}
-                            <div className="flex gap-2">
                               <input value={otpCode} onChange={e => setOtpCode(e.target.value)} className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl text-sm text-center outline-none transition-all focus:border-emerald-500 bg-gray-50/50" placeholder="کد تایید" dir="ltr" maxLength={4} />
                               <button type="button" onClick={handleVerifyOtp} disabled={otpLoading || otpCode.length < 4} className="px-6 py-3 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 transition disabled:opacity-50">{otpLoading ? '...' : 'تایید'}</button>
                             </div>

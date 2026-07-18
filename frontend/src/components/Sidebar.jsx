@@ -12,6 +12,7 @@ const doctorLinks = [
   { to: '/medical-records', label: 'پرونده پزشکی', icon: '📁' },
   { to: '/posts', label: 'پست‌ها', icon: '📝' },
   { to: '/chatbot-settings', label: 'چت‌بات هوشمند', icon: '🤖' },
+  { to: '/doctor/comments', label: 'نظرات', icon: '💬' },
   { to: '/site-settings', label: 'تنظیمات سایت', icon: '⚙️' },
 ];
 
