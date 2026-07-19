@@ -8,6 +8,7 @@ import Steps from '../components/home/Steps';
 import WorkingHours from '../components/home/WorkingHours';
 import Contact from '../components/home/Contact';
 import BlogSection from '../components/home/BlogSection';
+import TestimonialsSection from '../components/home/TestimonialsSection';
 import Chatbot from '../components/Chatbot';
 import Footer from '../components/home/Footer';
 import SEO from '../components/SEO';
@@ -30,6 +31,7 @@ export default function Home() {
       <Stats />
       <About />
       <Services />
+      <TestimonialsSection />
       <Steps />
       <WorkingHours />
       <BlogSection />
