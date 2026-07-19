@@ -31,7 +31,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [doctorName, setDoctorName] = useState('دکتر امیرحسین عبدی');
+  const [doctorName, setDoctorName] = useState('');
 
   useEffect(() => {
     API.get('/settings').then((res) => {

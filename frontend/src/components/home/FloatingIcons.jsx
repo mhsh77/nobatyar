@@ -1,18 +1,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaStethoscope, FaHeartbeat, FaPills, FaNotesMedical, FaSyringe, FaAmbulance } from 'react-icons/fa';
+import { FaBrain, FaHandHoldingHeart, FaHeart, FaLeaf, FaCommentDots, FaBalanceScale, FaRegSmile, FaSun, FaFeatherAlt, FaSeedling } from 'react-icons/fa';
 
 const icons = [
-  { Icon: FaStethoscope, size: 48, x: '8%', y: '18%', duration: 18, delay: 0 },
-  { Icon: FaHeartbeat, size: 42, x: '82%', y: '22%', duration: 20, delay: 1.5 },
-  { Icon: FaPills, size: 36, x: '22%', y: '72%', duration: 22, delay: 0.8 },
-  { Icon: FaNotesMedical, size: 44, x: '72%', y: '78%', duration: 19, delay: 2.5 },
-  { Icon: FaSyringe, size: 34, x: '48%', y: '8%', duration: 24, delay: 1 },
-  { Icon: FaAmbulance, size: 50, x: '3%', y: '52%', duration: 21, delay: 3.5 },
-  { Icon: FaStethoscope, size: 30, x: '58%', y: '88%', duration: 23, delay: 1.2 },
-  { Icon: FaHeartbeat, size: 52, x: '92%', y: '58%', duration: 17, delay: 3 },
-  { Icon: FaPills, size: 28, x: '38%', y: '92%', duration: 25, delay: 2 },
-  { Icon: FaNotesMedical, size: 38, x: '65%', y: '3%', duration: 20, delay: 4 },
+  { Icon: FaBrain, size: 54, x: '5%', y: '15%', duration: 20, delay: 0 },
+  { Icon: FaHandHoldingHeart, size: 48, x: '82%', y: '20%', duration: 22, delay: 1.5 },
+  { Icon: FaLeaf, size: 40, x: '20%', y: '75%', duration: 24, delay: 0.8 },
+  { Icon: FaHeart, size: 46, x: '75%', y: '80%', duration: 18, delay: 2.5 },
+  { Icon: FaCommentDots, size: 38, x: '50%', y: '5%', duration: 26, delay: 1 },
+  { Icon: FaBalanceScale, size: 44, x: '3%', y: '55%', duration: 21, delay: 3.5 },
+  { Icon: FaRegSmile, size: 36, x: '60%', y: '90%', duration: 23, delay: 1.2 },
+  { Icon: FaSun, size: 52, x: '93%', y: '60%', duration: 19, delay: 3 },
+  { Icon: FaFeatherAlt, size: 32, x: '40%', y: '95%', duration: 25, delay: 2 },
+  { Icon: FaSeedling, size: 42, x: '68%', y: '2%', duration: 20, delay: 4 },
 ];
 
 function randomY(from, to) {

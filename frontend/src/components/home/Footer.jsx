@@ -22,7 +22,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <span className="text-2xl">🩺</span>
-              <span className="text-lg font-bold">{s.doctor_name || 'دکتر امیرحسین عبدی'}</span>
+              <span className="text-lg font-bold">{s.doctor_name || ''}</span>
             </div>
             <p className="text-sm text-white/40 leading-relaxed max-w-xs">
               {s.doctor_specialty || 'متخصص بیماری‌های داخلی'} — نوبت‌دهی آنلاین
@@ -51,7 +51,7 @@ export default function Footer() {
           viewport={{ once: true }}
           className="border-t border-white/10 pt-6 text-center text-xs text-white/30"
         >
-          تمامی حقوق محفوظ است &copy; {s.doctor_name || 'دکتر امیرحسین عبدی'}
+          تمامی حقوق محفوظ است &copy; {s.doctor_name || ''}
         </motion.div>
       </div>
     </footer>
