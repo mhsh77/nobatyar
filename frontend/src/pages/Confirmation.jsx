@@ -157,7 +157,7 @@ export default function Confirmation() {
                         )}
                         {day.status === 'available' && (
                           <span className="text-xs text-medical-600 font-medium">
-                            {day.total_available} نوبت باقی مانده
+                            {day.total_available < 10 ? `${day.total_available} نوبت باقی مانده` : 'نوبت موجود'}
                           </span>
                         )}
                       </div>
@@ -191,7 +191,7 @@ export default function Confirmation() {
                       <p className="font-bold text-sm">صبح</p>
                       <p className="text-xs mt-1">
                         {selectedDayData.morning_count > 0
-                          ? `${selectedDayData.morning_count} نوبت`
+                          ? selectedDayData.morning_count < 10 ? `${selectedDayData.morning_count} نوبت` : ''
                           : 'ظرفیت کامل'}
                       </p>
                     </button>
@@ -211,7 +211,7 @@ export default function Confirmation() {
                       <p className="font-bold text-sm">ظهر</p>
                       <p className="text-xs mt-1">
                         {selectedDayData.afternoon_count > 0
-                          ? `${selectedDayData.afternoon_count} نوبت`
+                          ? selectedDayData.afternoon_count < 10 ? `${selectedDayData.afternoon_count} نوبت` : ''
                           : 'ظرفیت کامل'}
                       </p>
                     </button>
