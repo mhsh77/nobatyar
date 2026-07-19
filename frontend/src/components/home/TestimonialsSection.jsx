@@ -42,7 +42,7 @@ export default function TestimonialsSection() {
       <div className="relative z-10 max-w-6xl mx-auto px-4">
         <div className="text-center mb-14">
           <span className="inline-block px-4 py-1.5 bg-emerald-800/50 text-emerald-300 text-xs font-bold rounded-full mb-4 border border-emerald-700/50 backdrop-blur-sm">
-            نظرات بیماران
+            نظرات مراجعین
           </span>
           <h2 className="text-3xl md:text-4xl font-black text-white mb-3">تجربه مراجعین</h2>
           <p className="text-emerald-200/50 text-sm max-w-lg mx-auto">

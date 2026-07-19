@@ -9,8 +9,7 @@ const MONTHS = [
 export default function JalaliDatePicker({ value, onChange, label, className = '' }) {
   const todayJalali = useMemo(() => {
     const now = new Date();
-    const tomorrow = new Date(now.getTime() + 86400000);
-    return toJalaliDate(tomorrow.getFullYear(), tomorrow.getMonth() + 1, tomorrow.getDate());
+    return toJalaliDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
   }, []);
 
   const jalali = useMemo(() => {

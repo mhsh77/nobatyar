@@ -25,7 +25,7 @@ export default function Footer() {
               <span className="text-lg font-bold">{s.doctor_name || ''}</span>
             </div>
             <p className="text-sm text-white/40 leading-relaxed max-w-xs">
-              {s.doctor_specialty || 'متخصص بیماری‌های داخلی'} — نوبت‌دهی آنلاین
+              {s.doctor_specialty || 'روانشناس بالینی'} — نوبت‌دهی آنلاین
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8">

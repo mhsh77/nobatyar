@@ -52,7 +52,7 @@ export default function Hero() {
           <div className="text-center md:text-right">
             <motion.div variants={item} className="mb-4">
               <span className="inline-block px-4 py-1.5 bg-emerald-400/15 text-emerald-300 text-sm rounded-full border border-emerald-400/20 backdrop-blur-sm">
-                {s.hero_badge || 'متخصص بیماری‌های داخلی'}
+                {s.hero_badge || 'روانشناس بالینی'}
               </span>
             </motion.div>
 
@@ -62,11 +62,11 @@ export default function Hero() {
             >
               {s.doctor_name ? s.doctor_name.split(' ')[0] : 'دکتر'}
               <br />
-              <span className="text-emerald-400">{s.doctor_name ? s.doctor_name.split(' ').slice(1).join(' ') : 'امیرحسین عبدی'}</span>
+              <span className="text-emerald-400">{s.doctor_name ? s.doctor_name.split(' ').slice(1).join(' ') : ''}</span>
             </motion.h1>
 
             <motion.p variants={item} className="text-base md:text-lg text-white/60 leading-relaxed mb-8">
-              {s.hero_description || 'با بیش از ۱۲ سال تجربه در تشخیص و درمان بیماری‌های داخلی، در کنار شما هستیم تا مسیر سلامتی را هموارتر کنیم.'}
+              {s.hero_description || 'با بیش از ۱۲ سال تجربه در حوزه روانشناسی، در کنار شما هستیم تا مسیر سلامتی را هموارتر کنیم.'}
             </motion.p>
 
             <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">

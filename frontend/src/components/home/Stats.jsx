@@ -65,7 +65,7 @@ export default function Stats() {
         >
             {[
               { icon: FiAward, end: toNum(s.stats_years || 12), label: s.stats_years_label || 'سال تجربه' },
-              { icon: FiUsers, end: toNum(s.stats_patients || 18500), label: s.stats_patients_label || 'بیمار راضی' },
+              { icon: FiUsers, end: toNum(s.stats_patients || 18500), label: s.stats_patients_label || 'مراجعه کننده راضی' },
               { icon: FiCalendar, end: toNum(s.stats_visits || 62000), label: s.stats_visits_label || 'نوبت ویزیت' },
             ].map((item, i) => (
             <motion.div
