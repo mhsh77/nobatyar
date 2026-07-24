@@ -1,7 +1,10 @@
 from flask import Blueprint, request, jsonify, render_template
 from extensions import db
 from datetime import datetime, timedelta
-import random, urllib.request, json
+import random
+import json
+import urllib.request
+from sms_utils import send_otp_sms
 
 
 def send_sms_verify(mobile, code):
@@ -135,6 +138,24 @@ def submit_registration():
     )
     db.session.add(reg)
     db.session.commit()
+
+    # Registration confirmation SMS (VERIFY, template 814118: Name, Title, Date)
+    try:
+        from sms_utils import send_seminar_sms
+        from models import SiteSetting
+        ts = SiteSetting.query.filter_by(key='seminar_title').first()
+        ds = SiteSetting.query.filter_by(key='seminar_date').first()
+        _title = ts.value if (ts and ts.value) else 'سمینار'
+        _date = ds.value if (ds and ds.value) else ''
+        try:
+            from routes.appointments import gregorian_to_jalali
+            if _date:
+                _date = gregorian_to_jalali(_date)
+        except Exception:
+            pass
+        send_seminar_sms(phone, (first_name + ' ' + last_name).strip(), _title, _date)
+    except Exception:
+        pass
     return jsonify({"success": True, "message": "\u062b\u0628\u062a\u200c\u0646\u0627\u0645 \u0634\u0645\u0627 \u0628\u0627 \u0645\u0648\u0641\u0642\u06cc\u062a \u0627\u0646\u062c\u0627\u0645 \u0634\u062f."})
 
 
@@ -169,8 +190,6 @@ def list_registrations():
     return jsonify({"registrations": result, "total": pagination.total, "page": page, "pages": pagination.pages})
 
 
-@seminar_bp.route("/admin", methods=["GET"])
-
 @seminar_bp.route("/api/register/<int:reg_id>", methods=["DELETE"])
 def delete_registration(reg_id):
     reg = SeminarRegistration.query.get(reg_id)
@@ -179,6 +198,3 @@ def delete_registration(reg_id):
     db.session.delete(reg)
     db.session.commit()
     return jsonify({"success": True, "message": "حذف شد"})
-
-def admin_page():
-    return render_template("seminar_admin.html")

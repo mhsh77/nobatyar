@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from datetime import datetime
 import json
 import random
@@ -11,15 +11,16 @@ from models import ChatbotMessage, SiteSetting, User
 chatbot_bp = Blueprint('chatbot', __name__)
 
 RESPONSES = {
-    'سلام': 'سلام! من دستیار هوشمند مطب دکتر هستم. چطور می‌توانم به شما کمک کنم؟',
-    'خوبی': 'خوب هستم،谢谢你! چطور می‌توانم کمکتان کنم؟',
-    'نوبت': 'برای رزرو نوبت می‌توانید از بخش رزرو نوبت در سایت استفاده کنید. اگر نیاز به راهنمایی دارید، بپرسید.',
-    'دکتر': 'دکتر امیرحسین عبدی، متخصص بیماری‌های داخلی با ۱۲ سال تجربه هستند. برای اطلاعات بیشتر به بخش درباره ما مراجعه کنید.',
-    'آدرس': 'آدرس مطب: تهران، خیابان ولیعصر، بالاتر از ونک، پلاک ۱۲۳۴, طبقه سوم',
-    'تلفن': 'تلفن تماس: ۰۲۱-۱۲۳۴۵۶۷۸',
-    'ساعت': 'ساعت کاری: شنبه تا پنجشنبه ۰۹:۰۰ - ۱۷:۰۰',
+    'سلام': 'سلام! من دستیار هوشمند مطب دکتر حسین مرادی هستم. چطور می‌توانم به شما کمک کنم؟',
+    'خوبی': 'خوب هستم، ممنون! چطور می‌توانم کمکتان کنم؟',
+    'نوبت': 'برای رزرو نوبت می‌توانید از بخش «رزرو نوبت» در سایت استفاده کنید. اگر نیاز به راهنمایی دارید، بپرسید.',
+    'دکتر': 'دکتر حسین مرادی، روانشناس بالینی هستند. برای اطلاعات بیشتر به بخش «درباره ما» مراجعه کنید.',
+    'روانشناس': 'دکتر حسین مرادی، روانشناس بالینی هستند. برای اطلاعات بیشتر به بخش «درباره ما» مراجعه کنید.',
+    'آدرس': 'برای مشاهده آدرس و اطلاعات تماس لطفاً به بخش «ارتباط با ما» در سایت مراجعه کنید.',
+    'تلفن': 'برای شماره تماس لطفاً به بخش «ارتباط با ما» در سایت مراجعه کنید.',
+    'ساعت': 'ساعات کاری مطب در بخش «ارتباط با ما» و صفحه اصلی سایت درج شده است.',
     'هزینه': 'برای اطلاع از هزینه ویزیت لطفاً با مطب تماس بگیرید.',
-    'بیمه': 'مطب با اکثر بیمه‌های پایه و تکمیلی قرارداد دارد. برای اطلاعات دقیق تماس بگیرید.',
+    'بیمه': 'برای اطلاع از وضعیت بیمه لطفاً با مطب تماس بگیرید.',
     'تشکر': 'خواهش می‌کنم! همیشه در خدمت شما هستیم.',
     'خداحافظ': 'خداحافظ! روز خوبی داشته باشید و سلامت باشید.',
 }
@@ -35,12 +36,21 @@ def get_response(message):
 def get_chatbot_settings():
     settings = SiteSetting.query.filter(SiteSetting.key.like('chatbot_%')).all()
     result = {s.key.replace('chatbot_', ''): s.value for s in settings}
+    show_key = False
+    try:
+        verify_jwt_in_request(optional=True)
+        uid = get_jwt_identity()
+        if uid:
+            u = User.query.get(int(uid))
+            show_key = bool(u and u.role in ('doctor', 'secretary'))
+    except Exception:
+        show_key = False
     return jsonify({
         'enabled': result.get('enabled', 'false') == 'true',
         'prompt': result.get('prompt', ''),
         'title': result.get('title', 'چت با دستیار هوشمند'),
         'greeting': result.get('greeting', 'سلام! من دستیار هوشمند مطب دکتر هستم. چطور می‌توانم به شما کمک کنم؟'),
-        'api_key': result.get('api_key', ''),
+        'api_key': result.get('api_key', '') if show_key else '',
     })
 
 @chatbot_bp.route('/chatbot/settings', methods=['PUT'])

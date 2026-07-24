@@ -47,6 +47,15 @@ def confirm_appointment(appointment_id):
         return jsonify({'error': 'نوبت یافت نشد'}), 404
     appointment.status = 'confirmed'
     db.session.commit()
+    try:
+        from sms_utils import send_approve_sms
+        from routes.appointments import gregorian_to_jalali
+        patient = User.query.get(appointment.patient_id)
+        if patient and patient.mobile:
+            jdate = gregorian_to_jalali(appointment.appointment_date)
+            send_approve_sms(patient.mobile, patient.full_name, jdate, appointment.appointment_time, str(appointment.id))
+    except Exception:
+        pass
     return jsonify({'message': 'نوبت تایید شد'})
 
 @secretary_bp.route('/secretary/appointments/<int:appointment_id>/reject', methods=['PATCH'])
@@ -57,6 +66,14 @@ def reject_appointment(appointment_id):
         return jsonify({'error': 'نوبت یافت نشد'}), 404
     appointment.status = 'rejected'
     db.session.commit()
+    try:
+        from sms_utils import send_cancel_sms
+        from routes.appointments import gregorian_to_jalali
+        patient = User.query.get(appointment.patient_id)
+        if patient and patient.mobile:
+            send_cancel_sms(patient.mobile, patient.full_name, gregorian_to_jalali(appointment.appointment_date))
+    except Exception:
+        pass
     return jsonify({'message': 'نوبت رد شد'})
 
 @secretary_bp.route('/secretary/appointments/<int:appointment_id>/reschedule', methods=['PATCH'])
@@ -77,6 +94,14 @@ def reschedule_appointment(appointment_id):
     appointment.appointment_time = new_time
     appointment.status = 'pending'
     db.session.commit()
+    try:
+        from sms_utils import send_reschedule_sms
+        from routes.appointments import gregorian_to_jalali
+        patient = User.query.get(appointment.patient_id)
+        if patient and patient.mobile:
+            send_reschedule_sms(patient.mobile, patient.full_name, gregorian_to_jalali(new_date), new_time)
+    except Exception:
+        pass
     return jsonify({'message': 'نوبت تغییر یافت'})
 
 @secretary_bp.route('/secretary/appointments/<int:appointment_id>/arrived', methods=['PATCH'])

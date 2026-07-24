@@ -93,9 +93,15 @@ def create_medical_record():
             file.save(os.path.join(UPLOAD_FOLDER, fname))
             images.append(fname)
 
+    if doctor.role == 'doctor':
+        record_doctor_id = doctor_id
+    else:
+        _doc = User.query.filter_by(role='doctor').first()
+        record_doctor_id = _doc.id if _doc else doctor_id
+
     record = MedicalRecord(
         patient_id=patient_id,
-        doctor_id=doctor_id if doctor.role == 'doctor' else (User.query.get(patient_id).id if patient_id else doctor_id),
+        doctor_id=record_doctor_id,
         appointment_id=appointment_id,
         visit_date=visit_date,
         chief_complaint=chief_complaint,

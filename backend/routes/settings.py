@@ -19,7 +19,7 @@ def allowed_file(filename):
 @settings_bp.route('/settings', methods=['GET'])
 def get_settings():
     all_settings = SiteSetting.query.all()
-    result = {s.key: s.value for s in all_settings}
+    result = {s.key: s.value for s in all_settings if not s.key.startswith('chatbot_')}
     return jsonify({'settings': result})
 
 @settings_bp.route('/settings', methods=['PUT'])

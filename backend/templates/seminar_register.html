@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ثبت‌نام سمینار | moradipsy.ir</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Vazirmatn','Tahoma',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.container{background:#fff;border-radius:20px;padding:40px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+h1{text-align:center;color:#333;font-size:24px;margin-bottom:8px}
+.subtitle{text-align:center;color:#888;font-size:14px;margin-bottom:30px}
+.form-group{margin-bottom:20px}
+label{display:block;margin-bottom:6px;color:#555;font-size:14px;font-weight:500}
+input{width:100%;padding:12px 16px;border:2px solid #e0e0e0;border-radius:12px;font-size:15px;font-family:inherit;transition:border-color .2s;outline:none}
+input:focus{border-color:#667eea}
+.checkbox-group{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.checkbox-group input[type=checkbox]{width:20px;height:20px;cursor:pointer}
+.checkbox-group label{margin:0;cursor:pointer}
+.student-fields{background:#f8f9ff;border-radius:12px;padding:20px;display:none;margin-bottom:20px}
+.student-fields.show{display:block}
+.btn{width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:12px;font-size:16px;font-family:inherit;cursor:pointer;transition:opacity .2s}
+.btn:hover{opacity:.9}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.success-msg{display:none;text-align:center;color:#2e7d32;background:#e8f5e9;padding:20px;border-radius:12px;margin-top:10px}
+.error-msg{display:none;background:#fdecea;color:#c62828;padding:12px 16px;border-radius:12px;margin-bottom:20px;font-size:13px}
+.error-msg ul{margin:5px 0 0 18px}
+.spinner{display:none;text-align:center;margin:10px 0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner::after{content:'';display:inline-block;width:24px;height:24px;border:3px solid #ddd;border-top-color:#667eea;border-radius:50%;animation:spin .6s linear infinite}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>&#x1F4DA; ثبت‌نام سمینار</h1>
+<p class="subtitle">لطفاً اطلاعات خود را وارد کنید</p>
+<div class="error-msg" id="errorBox"><ul id="errorList"></ul></div>
+<form id="seminarForm">
+<div class="form-group"><label for="first_name">نام</label><input type="text" id="first_name" name="first_name" placeholder="نام" required></div>
+<div class="form-group"><label for="last_name">نام خانوادگی</label><input type="text" id="last_name" name="last_name" placeholder="نام خانوادگی" required></div>
+<div class="form-group"><label for="phone">شماره تماس</label><input type="tel" id="phone" name="phone" placeholder="0912xxxxxxx" required></div>
+<div class="checkbox-group"><input type="checkbox" id="is_student" name="is_student"><label for="is_student">دانشجو هستم</label></div>
+<div class="student-fields" id="studentFields">
+<div class="form-group"><label for="field_of_study">رشته تحصیلی</label><input type="text" id="field_of_study" name="field_of_study" placeholder="مثال: روانشناسی"></div>
+<div class="form-group"><label for="semester">ترم تحصیلی</label><input type="text" id="semester" name="semester" placeholder="مثال: 5"></div>
+</div>
+<button type="submit" class="btn" id="submitBtn">ثبت‌نام</button>
+</form>
+<div class="spinner" id="spinner"></div>
+<div class="success-msg" id="successMsg">&#x2705; ثبت‌نام شما با موفقیت انجام شد.</div>
+</div>
+<script>
+const form=document.getElementById("seminarForm"),cb=document.getElementById("is_student"),sf=document.getElementById("studentFields"),eb=document.getElementById("errorBox"),el=document.getElementById("errorList"),sm=document.getElementById("successMsg"),sb=document.getElementById("submitBtn"),sp=document.getElementById("spinner");
+cb.addEventListener("change",function(){sf.classList.toggle("show",this.checked)});
+form.addEventListener("submit",async function(e){e.preventDefault();eb.style.display="none";sm.style.display="none";sb.disabled=true;sp.style.display="block";
+const d={first_name:document.getElementById("first_name").value.trim(),last_name:document.getElementById("last_name").value.trim(),phone:document.getElementById("phone").value.trim(),is_student:cb.checked,field_of_study:document.getElementById("field_of_study").value.trim(),semester:document.getElementById("semester").value.trim()};
+try{const r=await fetch("/seminar/api/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});const j=await r.json();if(j.success){form.style.display="none";sp.style.display="none";sm.style.display="block"}else{sp.style.display="none";sb.disabled=false;el.innerHTML=j.errors.map(function(e){return"<li>"+e+"</li>"}).join("");eb.style.display="block"}}catch(e){sp.style.display="none";sb.disabled=false;el.innerHTML="<li>خطا در ارتباط با سرور</li>";eb.style.display="block"}});
+</script>
+</body>
+</html>

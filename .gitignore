@@ -4,6 +4,9 @@ backend/*.pyc
 backend/instance/*.db
 backend/uploads/*
 !backend/uploads/.gitkeep
+# holds live secrets (SMS API key, JWT secret) — use config.example.py as a template
+backend/config.py
+backend/*.bak.*
 .env
 .env.*
 *.log

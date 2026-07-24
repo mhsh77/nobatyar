@@ -53,30 +53,3 @@ def get_me():
         'national_id': user.national_id,
         'role': user.role
     })
-
-@auth_bp.route('/auth/profile', methods=['PUT'])
-@jwt_required()
-def update_profile():
-    user_id = int(get_jwt_identity())
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'error': 'کاربر یافت نشد'}), 404
-
-    data = request.get_json()
-    if not data:
-        return jsonify({'error': 'داده‌ای ارسال نشده'}), 400
-
-    if 'full_name' in data:
-        user.full_name = data['full_name']
-
-    db.session.commit()
-
-    return jsonify({
-        'message': 'پروفایل به‌روزرسانی شد',
-        'user': {
-            'id': user.id,
-            'full_name': user.full_name,
-            'mobile': user.mobile,
-            'role': user.role
-        }
-    })

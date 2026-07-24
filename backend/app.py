@@ -14,6 +14,8 @@ from routes.medical import medical_bp
 from routes.settings import settings_bp
 from routes.posts import posts_bp
 from routes.chatbot import chatbot_bp
+from routes.comments import comments_bp
+from routes.feedback import feedback_bp
 
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
@@ -40,6 +42,16 @@ def create_app(argv=None):
     app.register_blueprint(settings_bp, url_prefix='/api')
     app.register_blueprint(posts_bp, url_prefix='/api')
     app.register_blueprint(chatbot_bp, url_prefix='/api')
+    app.register_blueprint(comments_bp)
+    app.register_blueprint(feedback_bp)
+
+    # Seminar registration (conditional feature)
+    if app.config.get('ENABLE_SEMINAR'):
+        from routes.seminar import seminar_bp, SeminarRegistration
+        app.register_blueprint(seminar_bp)
+        # Ensure the table is created
+        with app.app_context():
+            SeminarRegistration.__table__.create(db.engine, checkfirst=True)
 
     frontend_dir = None
     if getattr(sys, 'frozen', False):

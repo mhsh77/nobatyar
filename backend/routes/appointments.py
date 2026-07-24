@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from sms_utils import send_booking_sms
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from extensions import db
@@ -123,6 +124,27 @@ def get_slots():
         'total_available': len(slots)
     })
 
+def gregorian_to_jalali(date_str):
+    try:
+        gy, gm, gd = map(int, date_str.split('-'))
+        base = datetime(2025, 3, 21)
+        diff = (datetime(gy, gm, gd).date() - base.date()).days
+        jy, r = 1404, diff
+        while r >= 365:
+            jy += 1
+            yr = 366 if ((((jy + 11) % 33) % 4) == 0) else 365
+            if r >= yr: r -= yr
+            else: break
+        md = [31]*6 + [30]*5 + [29]
+        if ((((jy + 11) % 33) % 4) == 0): md[-1] = 30
+        jm, jd = 1, r
+        for m in md:
+            if jd >= m: jd -= m; jm += 1
+            else: break
+        return str(jy) + '/' + str(jm).zfill(2) + '/' + str(jd + 1).zfill(2)
+    except:
+        return date_str
+
 @appointment_bp.route('/appointments/book', methods=['POST'])
 def book_appointment():
     data = request.get_json()
@@ -170,6 +192,61 @@ def book_appointment():
     )
     db.session.add(appointment)
     db.session.commit()
+
+    # Convert to Jalali date for SMS
+    try:
+        gy, gm, gd = map(int, appointment.appointment_date.split('-'))
+        # Simple Jalali conversion
+        base_gy, base_gm, base_gd = 2025, 3, 21  # Farvardin 1, 1404
+        base_jy = 1404
+        days_diff = (date_obj.date() - datetime(base_gy, base_gm, base_gd).date()).days
+        
+        jy = base_jy
+        remaining = days_diff
+        while remaining >= 365:
+            jy += 1
+            leap = ((((jy + 11) % 33) % 4) == 0)
+            ydays = 366 if leap else 365
+            if remaining >= ydays:
+                remaining -= ydays
+            else:
+                break
+            if remaining < 365:
+                break
+        
+        if remaining < 0:
+            jy = base_jy - 1
+            leap = ((((jy + 11) % 33) % 4) == 0)
+            remaining = (366 if leap else 365) + remaining
+        
+        jm_days = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29]
+        leap = ((((jy + 11) % 33) % 4) == 0)
+        if leap:
+            jm_days[11] = 30
+        jm = 1
+        for md in jm_days:
+            if remaining >= md:
+                remaining -= md
+                jm += 1
+            else:
+                break
+        jd = remaining + 1
+        jalali_date = f"{jy}/{jm:02d}/{jd:02d}"
+    except:
+        jalali_date = appointment.appointment_date
+    
+    # Send SMS to patient with Jalali date
+    send_booking_sms(patient.mobile, patient.full_name, jalali_date, appointment.appointment_time, str(appointment.id))
+    
+    # Send SMS to doctor
+    # Send SMS to doctor via template 580012
+    try:
+        from sms_utils import send_doctor_sms
+        doc = User.query.filter_by(role='doctor').first()
+        if doc and doc.mobile:
+            send_doctor_sms(doc.mobile, patient.full_name, jalali_date, appointment.appointment_time)
+    except:
+        pass
 
     return jsonify({
         'message': 'نوبت با موفقیت ثبت شد',
@@ -262,7 +339,8 @@ def get_today_count():
     pending = Appointment.query.filter_by(appointment_date=today, status='pending').count()
     completed = Appointment.query.filter_by(appointment_date=today, status='completed').count()
     missed = Appointment.query.filter_by(appointment_date=today, status='missed').count()
-    return jsonify({'total': count, 'pending': pending, 'completed': completed, 'missed': missed})
+    confirmed = Appointment.query.filter_by(appointment_date=today, status='confirmed').count()
+    return jsonify({'total': count, 'pending': pending, 'completed': completed, 'missed': missed, 'confirmed': confirmed})
 
 @appointment_bp.route('/appointments/<int:appointment_id>/status', methods=['PATCH'])
 @jwt_required()
@@ -276,8 +354,31 @@ def update_appointment_status(appointment_id):
     if not appointment:
         return jsonify({'error': 'نوبت یافت نشد'}), 404
 
+    # Update time if provided
+    if status == 'confirmed' and data.get('time'):
+        appointment.appointment_time = data['time']
+    
     appointment.status = status
     db.session.commit()
+    
+    # Send approve SMS when confirmed
+    if status == 'confirmed':
+        try:
+            patient = User.query.get(appointment.patient_id)
+            if patient and patient.mobile:
+                from sms_utils import send_approve_sms
+                jdate = gregorian_to_jalali(appointment.appointment_date)
+                send_approve_sms(patient.mobile, patient.full_name, jdate, appointment.appointment_time, str(appointment.id))
+        except:
+            pass
+    if status == 'rejected':
+        try:
+            patient = User.query.get(appointment.patient_id)
+            if patient and patient.mobile:
+                from sms_utils import send_cancel_sms
+                send_cancel_sms(patient.mobile, patient.full_name, gregorian_to_jalali(appointment.appointment_date))
+        except:
+            pass
     return jsonify({'message': 'وضعیت به‌روزرسانی شد', 'status': status})
 
 def serialize_appointments(appointments):

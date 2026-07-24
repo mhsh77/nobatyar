@@ -97,3 +97,27 @@ class MedicalRecord(db.Model):
 
     patient = db.relationship('User', foreign_keys=[patient_id], lazy=True)
     doctor = db.relationship('User', foreign_keys=[doctor_id], lazy=True)
+
+
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    approved = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    parent_id = db.Column(db.Integer, db.ForeignKey('comments.id'), nullable=True)
+    replies = db.relationship('Comment', backref=db.backref('parent', remote_side=[id]), lazy='dynamic', cascade='all, delete-orphan')
+    post = db.relationship('Post', backref=db.backref('comments', lazy=True, cascade='all, delete-orphan'))
+
+class SurveyResponse(db.Model):
+    __tablename__ = 'survey_responses'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    rating = db.Column(db.Integer, default=5)
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

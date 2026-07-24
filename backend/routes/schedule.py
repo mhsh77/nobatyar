@@ -228,9 +228,9 @@ def remove_closed_day(day_id):
 @schedule_bp.route('/schedule/weekly-grid', methods=['GET'])
 @jwt_required()
 def get_weekly_grid():
+    offset = int(request.args.get('offset', 0))
     today = datetime.now()
-    days_back = (today.weekday() - 5) % 7
-    week_start = today - timedelta(days=days_back)
+    week_start = today - timedelta(days=3) + timedelta(weeks=offset)
 
     grid = []
     all_times = []
