@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import API from '../api/axios';
+import { toEnglishDigits } from '../utils/persianDate';
 
 export default function BookAppointment() {
   const navigate = useNavigate();
@@ -41,7 +42,12 @@ export default function BookAppointment() {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'mobile' || name === 'national_id') {
+      setForm({ ...form, [name]: toEnglishDigits(value) });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   return (

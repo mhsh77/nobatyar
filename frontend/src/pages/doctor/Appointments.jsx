@@ -12,6 +12,9 @@ export default function DoctorAppointments() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [visitModal, setVisitModal] = useState(null);
+  const [rescheduleModal, setRescheduleModal] = useState(null);
+  const [newTime, setNewTime] = useState('');
+  const [rescheduling, setRescheduling] = useState(false);
 
   useEffect(() => {
     loadAppointments();
@@ -35,6 +38,22 @@ export default function DoctorAppointments() {
       loadAppointments();
     } catch {
       addToast('خطا', 'error');
+    }
+  };
+
+  const handleReschedule = async () => {
+    if (!newTime) return;
+    setRescheduling(true);
+    try {
+      await API.patch(`/appointments/${rescheduleModal.id}/status`, { status: 'confirmed', time: newTime });
+      addToast('نوبت با زمان جدید تایید شد', 'success');
+      setRescheduleModal(null);
+      setNewTime('');
+      loadAppointments();
+    } catch {
+      addToast('خطا', 'error');
+    } finally {
+      setRescheduling(false);
     }
   };
 
@@ -103,12 +122,23 @@ export default function DoctorAppointments() {
                       }`}>
                         {app.status === 'pending' ? 'در انتظار' :
                          app.status === 'confirmed' ? 'تایید شده' :
-                         app.status === 'completed' ? 'انجام شده' : 'عدم حضور'}
+                         app.status === 'completed' ? 'انجام شده' :
+                         app.status === 'missed' ? 'عدم حضور' : 'رد شده'}
                       </span>
                     </td>
                     <td className="table-cell">
                       {app.status === 'pending' || app.status === 'confirmed' ? (
                         <div className="flex gap-1 flex-wrap">
+                          {app.status === 'pending' && (
+                            <>
+                            <button onClick={() => updateStatus(app.id, 'confirmed')} className="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs hover:bg-green-200 whitespace-nowrap">✓ تایید</button>
+                            <button onClick={() => setRescheduleModal(app)} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-xs hover:bg-amber-200 whitespace-nowrap">⏱ تایید با تغییر</button>
+                            <button onClick={() => updateStatus(app.id, 'rejected')} className="px-2 py-1 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 whitespace-nowrap">✕ رد</button>
+                            </>
+                          )}
+                          {app.status === 'confirmed' && (
+                            <button onClick={() => setRescheduleModal(app)} className="px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-xs hover:bg-amber-200 whitespace-nowrap">⏱ تغییر زمان</button>
+                          )}
                           <button onClick={() => setVisitModal(app)} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200 whitespace-nowrap">ویزیت</button>
                           <button onClick={() => updateStatus(app.id, 'missed')} className="px-2 py-1 bg-red-100 text-red-700 rounded-lg text-xs hover:bg-red-200 whitespace-nowrap">عدم حضور</button>
                         </div>
@@ -129,8 +159,22 @@ export default function DoctorAppointments() {
         <MedicalRecordForm
           appointment={visitModal}
           onClose={() => setVisitModal(null)}
-          onSaved={() => { loadAppointments(); }}
+          onSaved={() => { setVisitModal(null); loadAppointments(); }}
         />
+      )}
+      {rescheduleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => { setRescheduleModal(null); setNewTime(''); }}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
+            <h3 className="font-bold text-gray-800 mb-1">تایید با تغییر زمان</h3>
+            <p className="text-sm text-gray-400 mb-4">بیمار: {rescheduleModal.patient_name} — زمان فعلی: {rescheduleModal.time}</p>
+            <input type="time" value={newTime} onChange={e => setNewTime(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none focus:border-medical-500 mb-4"
+              min={rescheduleModal.date === new Date().toISOString().split('T')[0] ? new Date().toTimeString().slice(0,5) : undefined} />
+            <div className="flex gap-3">
+              <button onClick={handleReschedule} disabled={rescheduling || !newTime} className="flex-1 py-2.5 bg-medical-600 text-white rounded-lg text-sm font-medium hover:bg-medical-700 transition disabled:opacity-50">{rescheduling ? '...' : 'تایید نوبت با زمان جدید'}</button>
+              <button onClick={() => { setRescheduleModal(null); setNewTime(''); }} className="px-4 py-2.5 text-gray-500 hover:text-gray-700 text-sm">انصراف</button>
+            </div>
+          </div>
+        </div>
       )}
     </Layout>
   );

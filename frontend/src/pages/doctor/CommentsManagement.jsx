@@ -31,8 +31,8 @@ export default function CommentsManagement() {
     setSelectedPost(postId);
     setLoadingComments(true);
     try {
-      const res = await fetch(`${COMMENTS_API}/admin/${postId}`);
-      const data = await res.json();
+      const res = await API.get(`/comments/admin/${postId}`);
+      const data = res.data;
       setComments(data.comments || []);
     } catch {}
     finally { setLoadingComments(false); }
@@ -40,8 +40,8 @@ export default function CommentsManagement() {
 
   const handleApprove = async (commentId) => {
     try {
-      const res = await fetch(`${COMMENTS_API}/${commentId}/approve`, { method: 'PUT' });
-      const d = await res.json();
+      const res = await API.put(`/comments/${commentId}/approve`);
+      const d = res.data;
       if (d.success) {
         addToast('نظر تایید شد', 'success');
         setComments(prev => prev.map(c => c.id === commentId ? { ...c, approved: true } : c));
@@ -52,8 +52,8 @@ export default function CommentsManagement() {
   const handleDelete = async (commentId) => {
     if (!window.confirm('حذف شود؟')) return;
     try {
-      const res = await fetch(`${COMMENTS_API}/${commentId}`, { method: 'DELETE' });
-      const d = await res.json();
+      const res = await API.delete(`/comments/${commentId}`);
+      const d = res.data;
       if (d.success) {
         addToast('حذف شد', 'success');
         setComments(prev => prev.filter(c => c.id !== commentId));
@@ -65,11 +65,8 @@ export default function CommentsManagement() {
     if (!replyText.trim()) return;
     setSendingReply(true);
     try {
-      const res = await fetch(`${COMMENTS_API}/${commentId}/reply`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: replyText }),
-      });
-      const d = await res.json();
+      const res = await API.post(`/comments/${commentId}/reply`, { content: replyText });
+      const d = res.data;
       if (d.success) {
         addToast('پاسخ ثبت شد و پیامک به کاربر ارسال شد', 'success');
         setReplyingTo(null);
