@@ -6,7 +6,7 @@ import SEO from '../components/SEO';
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/api$/, '')
-  : 'https://api.moradipsy.ir';
+  : 'https://api.viracoai.net:5000';
 
 const SEND_OTP = `${API_BASE}/api/feedback/send-otp`;
 const VERIFY_OTP = `${API_BASE}/api/feedback/verify-otp`;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/api$/, '')
-  : 'https://api.moradipsy.ir';
+  : 'https://api.viracoai.net:5000';
 
 const Star = ({ filled }) => (
   <svg className={`w-4 h-4 ${filled ? 'text-amber-400' : 'text-gray-500/30'}`} fill="currentColor" viewBox="0 0 20 20">

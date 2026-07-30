@@ -6,7 +6,7 @@ import API from '../api/axios';
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/api$/, '')
-  : 'https://api.moradipsy.ir';
+  : 'https://api.viracoai.net:5000';
 const imageKeys = ['hero_doctor_image', 'about_clinic_image'];
 
 export default function SiteSettings() {

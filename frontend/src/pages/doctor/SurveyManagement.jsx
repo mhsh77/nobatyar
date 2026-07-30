@@ -6,7 +6,7 @@ import { formatPersianDate } from '../../utils/persianDate';
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/api$/, '')
-  : 'https://api.moradipsy.ir';
+  : 'https://api.viracoai.net:5000';
 
 const API_URL = `${API_BASE}/api/feedback`;
 

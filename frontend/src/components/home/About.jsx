@@ -5,7 +5,7 @@ import API from '../../api/axios';
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL.replace(/\/api$/, '')
-  : 'https://api.moradipsy.ir';
+  : 'https://api.viracoai.net:5000';
 
 function imgUrl(val) {
   if (!val) return '';
