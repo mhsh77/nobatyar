@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { FiCheckCircle } from 'react-icons/fi';
 import API from '../../api/axios';
 
-const API_BASE = 'https://api.moradipsy.ir';
+const API_BASE = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/api$/, '')
+  : 'https://api.moradipsy.ir';
 
 function imgUrl(val) {
   if (!val) return '';

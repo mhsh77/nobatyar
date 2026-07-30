@@ -9,9 +9,12 @@ Clinic appointment system for **moradipsy.ir** (Dr. حسین مرادی, روا�
 - Features: appointment booking (OTP → book → confirm → visit), blog + comments, survey, seminar registration, site settings, simple chatbot.
 
 ## Where it runs / deploy
-- **Backend**: VPS, `/var/www/moradipsy.ir/backend`, systemd unit `moradipsy-backend` (Flask on `127.0.0.1:5001`; nginx proxies `api.moradipsy.ir/api|/uploads|/seminar` → 5001).
-  Deploy = edit files on the server, then `systemctl restart moradipsy-backend`. **Backend edits happen ON THE SERVER**, so after any change **sync the files back into this repo** (repo can drift from the server — verify with a checksum diff before assuming they match).
-- **Frontend**: `cd frontend && npm run build` (uses `.env.production` → `VITE_API_URL=https://api.moradipsy.ir/api`), then FTP the `dist/` files (`index.html`, hashed `assets/*.js|css`) to the LiteSpeed host root + `/assets/`.
+- **Backend** (migrated 2026-07-30): host `chatbot`, user `kut`, dir `/home/kut/moradipsy-backend`, systemd unit `moradipsy-backend` (Flask on `0.0.0.0:5055`).
+  **Only port 5000 is open externally**, so nginx terminates SSL on **:5000** and proxies → `127.0.0.1:5055`. Public API base is therefore **`https://api.viracoai.net:5000/api`** (note the port).
+  ⚠️ nginx config is **inline in `/etc/nginx/nginx.conf`** (the `VIRACOAI BACKEND SERVER ROUTING` block) — `nginx.conf` does **not** include `sites-enabled/`, so editing files there has no effect.
+  Deploy = edit files on the server, then `sudo systemctl restart moradipsy-backend`. **Backend edits happen ON THE SERVER**, so after any change **sync the files back into this repo** (repo can drift — verify with a checksum diff).
+  Previous host was `109.122.250.39` (`/var/www/moradipsy.ir/backend`) — now stopped/disabled, files + a final DB snapshot kept there for rollback.
+- **Frontend**: `cd frontend && npm run build` (uses `.env.production` → `VITE_API_URL=https://api.viracoai.net:5000/api`), then FTP the `dist/` files (`index.html`, hashed `assets/*.js|css`) to the LiteSpeed host root + `/assets/`. Frontend hosting did **not** move.
 - SSH/FTP credentials are **not** stored in the repo — they come from the session/operator.
 
 ## Secrets
@@ -34,7 +37,8 @@ Run E2E against a **copy** of the prod DB with SMS mocked:
 ## Gotchas
 - Backend runs the Flask **dev server as root on `0.0.0.0:5001`** with no firewall — directly reachable from the internet (known; leave unless asked).
 - Jalali date conversion is **hand-rolled** in `backend/routes/appointments.py::gregorian_to_jalali` (verified correct for the near future). Patient SMS dates use it.
-- The reminder cron `/root/send_reminders.py` lives **outside this repo** (server `/root`), on a per-minute crontab.
+- The reminder cron now lives at `/home/kut/moradipsy-backend/send_reminders.py` (per-minute crontab of user `kut`, arg `1440` = 24h ahead). It IS in the app dir now, but the crontab entry itself is server-side state.
+- `routes/chatbot.py` imports `openai`, so it's a hard runtime dependency even though the chatbot is off.
 - `reminder_sent` column exists in the DB via `ALTER TABLE` but is **not** in `models.py` — a fresh `db.create_all()` would omit it.
 - Comment admin endpoints require a staff JWT; the admin UI must call them via the authed `API` axios instance (not raw `fetch`).
 
