@@ -242,9 +242,10 @@ def book_appointment():
     # Send SMS to doctor via template 580012
     try:
         from sms_utils import send_doctor_sms
-        doc = User.query.filter_by(role='doctor').first()
-        if doc and doc.mobile:
-            send_doctor_sms(doc.mobile, patient.full_name, jalali_date, appointment.appointment_time)
+        # Notify every doctor-role account (real doctor + demo/admin accounts)
+        for doc in User.query.filter_by(role='doctor').all():
+            if doc and doc.mobile:
+                send_doctor_sms(doc.mobile, patient.full_name, jalali_date, appointment.appointment_time)
     except:
         pass
 
