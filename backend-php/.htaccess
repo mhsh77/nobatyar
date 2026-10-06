@@ -1,0 +1,47 @@
+# ============================================================================
+# Nobatyar / Moradipsy — site root .htaccess (PHP 8.1 backend + React SPA)
+# Copy this to the web root (public_html). It REPLACES the SPA-only .htaccess:
+# it routes /api and the seminar backend endpoints to PHP, and sends everything
+# else to the SPA's index.html.
+# ============================================================================
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# Make sure the Authorization header reaches PHP (some hosts strip it).
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# --- API backend: all /api/* (including /api/uploads/*) handled by PHP ---
+RewriteRule ^api(/.*)?$ api/index.php [QSA,L]
+
+# --- Seminar backend: only the backend endpoints.
+#     /seminar itself is a client-side SPA route, so it is NOT sent to PHP. ---
+RewriteRule ^seminar/api(/.*)?$ seminar/index.php [QSA,L]
+RewriteRule ^seminar/register/?$ seminar/index.php [QSA,L]
+
+# --- SPA fallback: anything that is not a real file/dir -> index.html ---
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+</IfModule>
+
+# Never serve the secrets/config files.
+<FilesMatch "^config.*\.php$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# Optional: long cache for the hashed SPA assets.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  <FilesMatch "\.(js|css|woff2?|png|jpe?g|gif|svg|webp)$">
+    ExpiresDefault "access plus 7 days"
+  </FilesMatch>
+</IfModule>

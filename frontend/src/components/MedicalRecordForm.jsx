@@ -89,7 +89,7 @@ export default function MedicalRecordForm({ appointment, onClose, onSaved }) {
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      images.forEach((img) => fd.append('images', img));
+      images.forEach((img) => fd.append('images[]', img));
 
       const url = recordId
         ? `/medical-records/update/${recordId}`
