@@ -1,0 +1,8 @@
+# Live secrets — never commit (use config.example.php as the template).
+config.php
+
+# Uploaded files
+uploads/*
+!uploads/.gitkeep
+
+*.log

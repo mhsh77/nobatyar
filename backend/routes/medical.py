@@ -73,7 +73,7 @@ def create_medical_record():
         existing.updated_at = datetime.utcnow()
 
         images = json.loads(existing.images) if existing.images else []
-        uploaded = request.files.getlist('images')
+        uploaded = request.files.getlist('images') + request.files.getlist('images[]')
         for file in uploaded:
             if file and allowed_file(file.filename):
                 ext = file.filename.rsplit('.', 1)[1].lower()
@@ -85,7 +85,7 @@ def create_medical_record():
         return jsonify({'message': 'پرونده پزشکی به‌روزرسانی شد', 'id': existing.id})
 
     images = []
-    uploaded = request.files.getlist('images')
+    uploaded = request.files.getlist('images') + request.files.getlist('images[]')
     for file in uploaded:
         if file and allowed_file(file.filename):
             ext = file.filename.rsplit('.', 1)[1].lower()
@@ -228,7 +228,7 @@ def update_medical_record(record_id):
     r.updated_at = datetime.utcnow()
 
     images = json.loads(r.images) if r.images else []
-    uploaded = request.files.getlist('images')
+    uploaded = request.files.getlist('images') + request.files.getlist('images[]')
     for file in uploaded:
         if file and allowed_file(file.filename):
             ext = file.filename.rsplit('.', 1)[1].lower()
